@@ -1,18 +1,4 @@
-defmodule Matroid do
-  @moduledoc """
-  Documentation for `Matroid`.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Matroid.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+defprotocol Matroid do
+  def includes(matroid, set)
+  def ground_set(matroid)
 end
