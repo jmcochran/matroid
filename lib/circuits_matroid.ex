@@ -5,11 +5,12 @@ defmodule CircuitsMatroid do
 
   defimpl Matroid do
     # TODO: fix this implementation
-    def includes(%CircuitsMatroid{ground_set: _gs, circuits: bs}, set), do: set in bs
-    def ground_set(%CircuitsMatroid{ground_set: gs, circuits: _bs}), do: gs
+    def includes?(%CircuitsMatroid{ground_set: _gs, circuits: cs}, set), do: set in cs
+    def ground_set(%CircuitsMatroid{ground_set: gs, circuits: _cs}), do: gs
   end
 
   def new(gs, cs) when is_list(gs) and is_list(cs) do
+    # TODO: add validations
     %CircuitsMatroid{ground_set: gs, circuits: cs}
   end
 end
