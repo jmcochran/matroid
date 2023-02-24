@@ -93,4 +93,9 @@ defmodule Matroid.SetOperatorsTest do
     assert Enum.sort(SetOperators.strict_inclusive_pairs(@power_set)) == Enum.sort(@strict_inclusive_pairs_list)
     assert Enum.sort(SetOperators.strict_inclusive_pairs(@trivial)) == []
   end
+
+  test("uppercone") do
+    assert SetOperators.uppercone(@ground_set, @empty_set) == @empty_set
+    assert SetOperators.uppercone(@ground_set, @trivial) == @power_set
+  end
 end
