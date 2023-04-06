@@ -49,7 +49,7 @@ defmodule Matroid.SetOperatorsTest do
     {MapSet.new([2, 3]), MapSet.new([1, 2, 3])},
     {MapSet.new([1, 2, 3]), MapSet.new([1, 2, 3])}
   ]
-  @trivial_inclusive_pairs_list [
+  @trivial_pairs_list [
     {MapSet.new([]), MapSet.new([])}
   ]
   @strict_inclusive_pairs_list [
@@ -74,28 +74,69 @@ defmodule Matroid.SetOperatorsTest do
     {MapSet.new([2, 3]), MapSet.new([1, 2, 3])}
   ]
 
-  test("power_set") do
-    assert SetOperators.power_set(@ground_set) == @power_set
-    assert SetOperators.power_set(@empty_set) == @trivial
+  describe "power_set/1" do
+    test "returns the power set of a set" do
+      assert SetOperators.power_set(@ground_set) == @power_set
+    end
+
+    test "returns the trivial set for the empty set" do
+      assert SetOperators.power_set(@empty_set) == @trivial
+    end
   end
 
-  test("pairs") do
-    assert Enum.sort(SetOperators.pairs(@ground_set)) == Enum.sort(@pairs_list)
-    assert SetOperators.pairs(@empty_set) == []
+  describe "pairs/1" do
+    test "returns the pairs of a set" do
+      assert Enum.sort(SetOperators.pairs(@ground_set)) == Enum.sort(@pairs_list)
+    end
+
+    test "returns the empty list for the empty set" do
+      assert SetOperators.pairs(@empty_set) == []
+    end
+
+    test "returns a list of one pair of empty sets for the trivial set" do
+      assert Enum.sort(SetOperators.pairs(@trivial)) == Enum.sort(@trivial_pairs_list)
+    end
   end
 
-  test("inclusive_pairs") do
-    assert Enum.sort(SetOperators.inclusive_pairs(@power_set)) == Enum.sort(@inclusive_pairs_list)
-    assert Enum.sort(SetOperators.inclusive_pairs(@trivial)) == @trivial_inclusive_pairs_list
+  describe "inclusive_pairs/1" do
+    test "returns the inclusive pairs of a set" do
+      assert Enum.sort(SetOperators.inclusive_pairs(@power_set)) == Enum.sort(@inclusive_pairs_list)
+    end
+
+    test "returns the empty list for the empty set" do
+      assert SetOperators.inclusive_pairs(@empty_set) == []
+    end
+
+    test "returns the list of trivial pairs for the empty set" do
+      assert Enum.sort(SetOperators.inclusive_pairs(@trivial)) == Enum.sort(@trivial_pairs_list)
+    end
   end
 
-  test("strict_inclusive_pairs") do
-    assert Enum.sort(SetOperators.strict_inclusive_pairs(@power_set)) == Enum.sort(@strict_inclusive_pairs_list)
-    assert Enum.sort(SetOperators.strict_inclusive_pairs(@trivial)) == []
+  describe "strict_inclusive_pairs/1" do
+    test "returns the strict inclusive pairs of a set" do
+      assert Enum.sort(SetOperators.strict_inclusive_pairs(@power_set)) == Enum.sort(@strict_inclusive_pairs_list)
+    end
+
+    test "returns the empty list for the empty set" do
+      assert SetOperators.strict_inclusive_pairs(@empty_set) == []
+    end
+
+    test "returns the empty list for the trivial set" do
+      assert SetOperators.strict_inclusive_pairs(@trivial) == []
+    end
   end
 
-  test("uppercone") do
-    assert SetOperators.uppercone(@ground_set, @empty_set) == @empty_set
-    assert SetOperators.uppercone(@ground_set, @trivial) == @power_set
+  describe "uppercone/2" do
+    test "returns the upper cone of a set" do
+      assert SetOperators.uppercone(@ground_set, @power_set) == @power_set
+    end
+
+    test "returns the empty set for the empty set" do
+      assert SetOperators.uppercone(@ground_set, @empty_set) == @empty_set
+    end
+
+    test "returns the power set for the trivial set" do
+      assert SetOperators.uppercone(@ground_set, @trivial) == @power_set
+    end
   end
 end

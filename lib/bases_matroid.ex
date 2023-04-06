@@ -11,18 +11,18 @@ defmodule Matroid.BasesMatroid do
     def includes?(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}, set) do
       MapSet.member?(bs, set)
     end
-    @spec ground_set(%Matroid.BasesMatroid{}) :: any
+    @spec ground_set(%Matroid.BasesMatroid{}) :: %MapSet{}
     def ground_set(%Matroid.BasesMatroid{ground_set: gs, bases: _bs}), do: gs
   end
 
 
   @spec new(nonempty_list(any), nonempty_list(list(any))) ::
-          {:error} | {:ok, %Matroid.BasesMatroid{bases: MapSet.t(), ground_set: MapSet.t()}}
+          {:error, reason: String.t()} | {:ok, %Matroid.BasesMatroid{bases: MapSet.t(), ground_set: MapSet.t()}}
   def new(gs, bs) when length(gs) > 0 and length(bs) > 0 do
     with gs_set <- MapSet.new(gs),
          bs_set <- MapSet.new(bs |> Enum.map(fn b -> MapSet.new(b) end)),
-         true <- OrderAxioms.antichain(bs_set),
-         true <- ExchangeAxioms.middle_basis(gs_set, bs_set)
+         true <- OrderAxioms.antichain?(bs_set),
+         true <- ExchangeAxioms.middle_basis?(gs_set, bs_set)
     do
       {:ok, %Matroid.BasesMatroid{ground_set: gs_set, bases: bs_set}}
     else
