@@ -1,5 +1,5 @@
 defmodule Matroid.OrderAxiomsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Matroid.OrderAxioms
 
   @ground_set MapSet.new([1,2,3])

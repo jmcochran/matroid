@@ -1,5 +1,5 @@
 defmodule Matroid.ExchangeAxiomsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Matroid.ExchangeAxioms
 
   @ground_set MapSet.new([1,2,3])

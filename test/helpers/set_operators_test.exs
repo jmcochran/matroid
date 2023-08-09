@@ -1,5 +1,5 @@
 defmodule Matroid.SetOperatorsTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Matroid.SetOperators
 
   @ground_set MapSet.new([1,2,3])
@@ -14,7 +14,19 @@ defmodule Matroid.SetOperatorsTest do
     MapSet.new([3]),
     MapSet.new([])
   ])
+  @power_set_maximal MapSet.new([
+    MapSet.new([1,2,3])
+  ])
   @trivial MapSet.new([MapSet.new([])])
+  @trivial_opposite MapSet.new([
+    MapSet.new([1]),
+    MapSet.new([2]),
+    MapSet.new([3]),
+    MapSet.new([1,2]),
+    MapSet.new([1,3]),
+    MapSet.new([2,3]),
+    MapSet.new([1,2,3])
+  ])
   @pairs_list [
     {1, 1}, {1, 2}, {1, 3},
     {2, 1}, {2, 2}, {2, 3},
@@ -73,6 +85,55 @@ defmodule Matroid.SetOperatorsTest do
     {MapSet.new([1, 3]), MapSet.new([1, 2, 3])},
     {MapSet.new([2, 3]), MapSet.new([1, 2, 3])}
   ]
+  @basis MapSet.new([
+    MapSet.new([1, 2]),
+    MapSet.new([1, 3]),
+    MapSet.new([2, 3])
+  ])
+  @basis_uppercone MapSet.new([
+    MapSet.new([1, 2]),
+    MapSet.new([1, 3]),
+    MapSet.new([2, 3]),
+    MapSet.new([1, 2, 3])
+  ])
+  @basis_lowercone MapSet.new([
+    MapSet.new([1, 2]),
+    MapSet.new([1, 3]),
+    MapSet.new([2, 3]),
+    MapSet.new([1]),
+    MapSet.new([2]),
+    MapSet.new([3]),
+    MapSet.new([])
+  ])
+  @basis_opposite MapSet.new([
+    MapSet.new([]),
+    MapSet.new([1]),
+    MapSet.new([2]),
+    MapSet.new([3]),
+    MapSet.new([1, 2, 3])
+  ])
+  @singleton MapSet.new([
+    MapSet.new([1])
+  ])
+  @singleton_uppercone MapSet.new([
+    MapSet.new([1]),
+    MapSet.new([1, 2]),
+    MapSet.new([1, 3]),
+    MapSet.new([1, 2, 3])
+  ])
+  @singleton_lowercone MapSet.new([
+    MapSet.new([1]),
+    MapSet.new([])
+  ])
+  @singleton_opposite MapSet.new([
+    MapSet.new([]),
+    MapSet.new([2]),
+    MapSet.new([3]),
+    MapSet.new([1, 2]),
+    MapSet.new([1, 3]),
+    MapSet.new([2, 3]),
+    MapSet.new([1, 2, 3])
+  ])
 
   describe "power_set/1" do
     test "returns the power set of a set" do
@@ -127,7 +188,15 @@ defmodule Matroid.SetOperatorsTest do
   end
 
   describe "uppercone/2" do
-    test "returns the upper cone of a set" do
+    test "returns the upper cone of a basis" do
+      assert SetOperators.uppercone(@ground_set, @basis) == @basis_uppercone
+    end
+
+    test "returns the upper cone of a singleton" do
+      assert SetOperators.uppercone(@ground_set, @singleton) == @singleton_uppercone
+    end
+
+    test "returns the upper cone of a power set" do
       assert SetOperators.uppercone(@ground_set, @power_set) == @power_set
     end
 
@@ -137,6 +206,94 @@ defmodule Matroid.SetOperatorsTest do
 
     test "returns the power set for the trivial set" do
       assert SetOperators.uppercone(@ground_set, @trivial) == @power_set
+    end
+  end
+
+  describe "lowercone/2" do
+    test "returns the lower cone of a basis" do
+      assert SetOperators.lowercone(@ground_set, @basis) == @basis_lowercone
+    end
+
+    test "returns the lower cone of a singleton" do
+      assert SetOperators.lowercone(@ground_set, @singleton) == @singleton_lowercone
+    end
+
+    test "returns the lower cone of a power set" do
+      assert SetOperators.lowercone(@ground_set, @power_set) == @power_set
+    end
+
+    test "returns the empty set for the empty set" do
+      assert SetOperators.lowercone(@ground_set, @empty_set) == @empty_set
+    end
+
+    test "returns the trivial set for the trivial set" do
+      assert SetOperators.lowercone(@ground_set, @trivial) == @trivial
+    end
+  end
+
+  describe "maximal/1" do
+    test "returns the maximal elements of a basis" do
+      assert SetOperators.maximal(@basis) == @basis
+    end
+
+    test "returns the maximal elements of a singleton" do
+      assert SetOperators.maximal(@singleton) == @singleton
+    end
+
+    test "returns the maximal elements of a power set" do
+      assert SetOperators.maximal(@power_set) == @power_set_maximal
+    end
+
+    test "returns the empty set for the empty set" do
+      assert SetOperators.maximal(@empty_set) == @empty_set
+    end
+
+    test "returns the trivial set for the trivial set" do
+      assert SetOperators.maximal(@trivial) == @trivial
+    end
+  end
+
+  describe "minimal/1" do
+    test "returns the minimal elements of a basis" do
+      assert SetOperators.minimal(@basis) == @basis
+    end
+
+    test "returns the minimal elements of a singleton" do
+      assert SetOperators.minimal(@singleton) == @singleton
+    end
+
+    test "returns the minimal elements of a power set" do
+      assert SetOperators.minimal(@power_set) == @trivial
+    end
+
+    test "returns the empty set for the empty set" do
+      assert SetOperators.minimal(@empty_set) == @empty_set
+    end
+
+    test "returns the trivial set for the trivial set" do
+      assert SetOperators.minimal(@trivial) == @trivial
+    end
+  end
+
+  describe "opposite/2" do
+    test "returns the opposite of a basis" do
+      assert SetOperators.opposite(@ground_set, @basis) == @basis_opposite
+    end
+
+    test "returns the opposite of a singleton" do
+      assert SetOperators.opposite(@ground_set, @singleton) == @singleton_opposite
+    end
+
+    test "returns the opposite of a power set" do
+      assert SetOperators.opposite(@ground_set, @power_set) == @empty_set
+    end
+
+    test "returns the power set for the empty set" do
+      assert SetOperators.opposite(@ground_set, @empty_set) == @power_set
+    end
+
+    test "returns the opposite set for the trivial set" do
+      assert SetOperators.opposite(@ground_set, @trivial) == @trivial_opposite
     end
   end
 end
