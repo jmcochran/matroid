@@ -1,193 +1,202 @@
 defmodule Matroid.ExchangeAxiomsTest do
   use ExUnit.Case, async: true
+  use Matroid.SetFixtures, [:set_system_1, :set_system_2, :set_system_3]
   alias Matroid.ExchangeAxioms
 
-  @ground_set MapSet.new([1,2,3])
-  @power_set MapSet.new([
-    MapSet.new([1,2,3]),
-    MapSet.new([1,2]),
-    MapSet.new([1,3]),
-    MapSet.new([2,3]),
-    MapSet.new([1]),
-    MapSet.new([2]),
-    MapSet.new([3]),
-    MapSet.new([])
-  ])
-  @trivial MapSet.new([
-    MapSet.new([])
-  ])
-  @singleton_ground_set MapSet.new([1])
-  @singleton MapSet.new([
-    MapSet.new([1])
-  ])
-  @good_basis MapSet.new([
-    MapSet.new([1,2]),
-    MapSet.new([1,3]),
-    MapSet.new([2,3])
-  ])
-  @bad_basis MapSet.new([
-    MapSet.new([1,2,3]),
-    MapSet.new([3]),
-    MapSet.new([])
-  ])
-
-  describe "middle_basis?/2" do
-    test "returns true for a good basis" do
-      assert ExchangeAxioms.middle_basis?(@ground_set, @good_basis)
+  describe "size 1 ground set" do
+    test "middle_basis?/2" do
+      assert ExchangeAxioms.middle_basis?(@ground_set_1, @bases_1a)
+      assert ExchangeAxioms.middle_basis?(@ground_set_1, @power_set_1)
+      assert ExchangeAxioms.middle_basis?(@ground_set_1, @singleton_set_1)
+      assert ExchangeAxioms.middle_basis?(@ground_set_1, @trivial_set_1)
+      assert ExchangeAxioms.middle_basis?(@ground_set_1, @empty_set_1)
     end
 
-    test "returns true for the trivial basis" do
-      assert ExchangeAxioms.middle_basis?(@ground_set, @trivial)
+    test "weak_basis_exchange?/1" do
+      assert ExchangeAxioms.weak_basis_exchange?(@bases_1a)
+      refute ExchangeAxioms.weak_basis_exchange?(@power_set_1)
+      assert ExchangeAxioms.weak_basis_exchange?(@singleton_set_1)
+      assert ExchangeAxioms.weak_basis_exchange?(@trivial_set_1)
+      assert ExchangeAxioms.weak_basis_exchange?(@empty_set_1)
     end
 
-    test "returns true for the power set" do
-      assert ExchangeAxioms.middle_basis?(@ground_set, @power_set)
+    test "augmentation?/1" do
+      assert ExchangeAxioms.augmentation?(@independent_sets_1a)
+      assert ExchangeAxioms.augmentation?(@power_set_1)
+      assert ExchangeAxioms.augmentation?(@singleton_set_1)
+      assert ExchangeAxioms.augmentation?(@trivial_set_1)
+      assert ExchangeAxioms.augmentation?(@empty_set_1)
     end
 
-    test "returns true for a singleton set" do
-      assert ExchangeAxioms.middle_basis?(@singleton_ground_set, @singleton)
+    test "reduction?/1" do
+      assert ExchangeAxioms.reduction?(@spanning_sets_1a)
+      assert ExchangeAxioms.reduction?(@power_set_1)
+      assert ExchangeAxioms.reduction?(@singleton_set_1)
+      assert ExchangeAxioms.reduction?(@trivial_set_1)
+      assert ExchangeAxioms.reduction?(@empty_set_1)
     end
 
-    test "returns false for a bad basis" do
-      refute ExchangeAxioms.middle_basis?(@ground_set, @bad_basis)
-    end
-  end
-
-  describe "weak_basis_exchange?/1" do
-    test "returns true for a good basis" do
-      assert ExchangeAxioms.weak_basis_exchange?(@good_basis)
+    test "contraction?/2" do
+      assert ExchangeAxioms.contraction?(@ground_set_1, @dependent_sets_1a)
+      assert ExchangeAxioms.contraction?(@ground_set_1, @power_set_1)
+      assert ExchangeAxioms.contraction?(@ground_set_1, @singleton_set_1)
+      assert ExchangeAxioms.contraction?(@ground_set_1, @trivial_set_1)
+      assert ExchangeAxioms.contraction?(@ground_set_1, @empty_set_1)
     end
 
-    test "returns true for the trivial basis" do
-      assert ExchangeAxioms.weak_basis_exchange?(@trivial)
+    test "extension?/2" do
+      assert ExchangeAxioms.extension?(@ground_set_1, @nonspanning_sets_1a)
+      assert ExchangeAxioms.extension?(@ground_set_1, @power_set_1)
+      assert ExchangeAxioms.extension?(@ground_set_1, @singleton_set_1)
+      assert ExchangeAxioms.extension?(@ground_set_1, @trivial_set_1)
+      assert ExchangeAxioms.extension?(@ground_set_1, @empty_set_1)
     end
 
-    test "returns false for the power set" do
-      refute ExchangeAxioms.weak_basis_exchange?(@power_set)
+    test "elimination?/2" do
+      assert ExchangeAxioms.elimination?(@ground_set_1, @circuits_1a)
+      refute ExchangeAxioms.elimination?(@ground_set_1, @power_set_1)
+      assert ExchangeAxioms.elimination?(@ground_set_1, @singleton_set_1)
+      assert ExchangeAxioms.elimination?(@ground_set_1, @trivial_set_1)
+      assert ExchangeAxioms.elimination?(@ground_set_1, @empty_set_1)
     end
 
-    test "returns true for a singleton set" do
-      assert ExchangeAxioms.weak_basis_exchange?(@singleton)
-    end
-
-    test "returns false for a bad basis" do
-      refute ExchangeAxioms.weak_basis_exchange?(@bad_basis)
+    test "covering?/2" do
+      assert ExchangeAxioms.covering?(@ground_set_1, @hyperplanes_1a)
+      assert ExchangeAxioms.covering?(@ground_set_1, @power_set_1)
+      assert ExchangeAxioms.covering?(@ground_set_1, @singleton_set_1)
+      assert ExchangeAxioms.covering?(@ground_set_1, @trivial_set_1)
+      assert ExchangeAxioms.covering?(@ground_set_1, @empty_set_1)
     end
   end
 
-  describe "augmentation?/1" do
-    test "returns true for a good basis" do
-      assert ExchangeAxioms.augmentation?(@good_basis)
+  describe "size 2 ground set" do
+    test "middle_basis?/2" do
+      assert ExchangeAxioms.middle_basis?(@ground_set_2, @bases_2a)
+      assert ExchangeAxioms.middle_basis?(@ground_set_2, @bases_2b)
+      assert ExchangeAxioms.middle_basis?(@ground_set_2, @power_set_2)
+      assert ExchangeAxioms.middle_basis?(@ground_set_2, @singleton_set_2)
+      assert ExchangeAxioms.middle_basis?(@ground_set_2, @trivial_set_2)
+      assert ExchangeAxioms.middle_basis?(@ground_set_2, @empty_set_2)
     end
 
-    test "returns true for the trivial basis" do
-      assert ExchangeAxioms.augmentation?(@trivial)
+    test "weak_basis_exchange?/1" do
+      assert ExchangeAxioms.weak_basis_exchange?(@bases_2a)
+      assert ExchangeAxioms.weak_basis_exchange?(@bases_2b)
+      refute ExchangeAxioms.weak_basis_exchange?(@power_set_2)
+      assert ExchangeAxioms.weak_basis_exchange?(@singleton_set_2)
+      assert ExchangeAxioms.weak_basis_exchange?(@trivial_set_2)
+      assert ExchangeAxioms.weak_basis_exchange?(@empty_set_2)
     end
 
-    test "returns true for the power set" do
-      assert ExchangeAxioms.augmentation?(@power_set)
+    test "augmentation?/1" do
+      assert ExchangeAxioms.augmentation?(@independent_sets_2a)
+      assert ExchangeAxioms.augmentation?(@independent_sets_2b)
+      assert ExchangeAxioms.augmentation?(@power_set_2)
+      assert ExchangeAxioms.augmentation?(@singleton_set_2)
+      assert ExchangeAxioms.augmentation?(@trivial_set_2)
+      assert ExchangeAxioms.augmentation?(@empty_set_2)
     end
 
-    test "returns true for a singleton set" do
-      assert ExchangeAxioms.augmentation?(@singleton)
+    test "reduction?/1" do
+      assert ExchangeAxioms.reduction?(@spanning_sets_2a)
+      assert ExchangeAxioms.reduction?(@spanning_sets_2b)
+      assert ExchangeAxioms.reduction?(@power_set_2)
+      assert ExchangeAxioms.reduction?(@singleton_set_2)
+      assert ExchangeAxioms.reduction?(@trivial_set_2)
+      assert ExchangeAxioms.reduction?(@empty_set_2)
     end
 
-    test "returns false for a bad basis" do
-      refute ExchangeAxioms.augmentation?(@bad_basis)
+    test "contraction?/2" do
+      assert ExchangeAxioms.contraction?(@ground_set_2, @dependent_sets_2a)
+      assert ExchangeAxioms.contraction?(@ground_set_2, @dependent_sets_2b)
+      assert ExchangeAxioms.contraction?(@ground_set_2, @power_set_2)
+      assert ExchangeAxioms.contraction?(@ground_set_2, @singleton_set_2)
+      assert ExchangeAxioms.contraction?(@ground_set_2, @trivial_set_2)
+      assert ExchangeAxioms.contraction?(@ground_set_2, @empty_set_2)
+    end
+
+    test "extension?/2" do
+      assert ExchangeAxioms.extension?(@ground_set_2, @nonspanning_sets_2a)
+      assert ExchangeAxioms.extension?(@ground_set_2, @nonspanning_sets_2b)
+      assert ExchangeAxioms.extension?(@ground_set_2, @power_set_2)
+      assert ExchangeAxioms.extension?(@ground_set_2, @singleton_set_2)
+      assert ExchangeAxioms.extension?(@ground_set_2, @trivial_set_2)
+      assert ExchangeAxioms.extension?(@ground_set_2, @empty_set_2)
+    end
+
+    test "elimination?/2" do
+      assert ExchangeAxioms.elimination?(@ground_set_2, @circuits_2a)
+      assert ExchangeAxioms.elimination?(@ground_set_2, @circuits_2b)
+      refute ExchangeAxioms.elimination?(@ground_set_2, @power_set_2)
+      assert ExchangeAxioms.elimination?(@ground_set_2, @singleton_set_2)
+      assert ExchangeAxioms.elimination?(@ground_set_2, @trivial_set_2)
+      assert ExchangeAxioms.elimination?(@ground_set_2, @empty_set_2)
+    end
+
+    test "covering?/2" do
+      assert ExchangeAxioms.covering?(@ground_set_2, @hyperplanes_2a)
+      assert ExchangeAxioms.covering?(@ground_set_2, @hyperplanes_2b)
+      assert ExchangeAxioms.covering?(@ground_set_2, @power_set_2)
+      assert ExchangeAxioms.covering?(@ground_set_2, @singleton_set_2)
+      assert ExchangeAxioms.covering?(@ground_set_2, @trivial_set_2)
+      assert ExchangeAxioms.covering?(@ground_set_2, @empty_set_2)
     end
   end
 
-  describe "reduction?/1" do
-    test "returns true for a good basis" do
-      assert ExchangeAxioms.reduction?(@good_basis)
+  describe "size 3 ground set" do
+    test "middle_basis?/2" do
+      assert ExchangeAxioms.middle_basis?(@ground_set_3, @good_basis_3)
+      assert ExchangeAxioms.middle_basis?(@ground_set_3, @trivial_3)
+      assert ExchangeAxioms.middle_basis?(@ground_set_3, @power_set_3)
+      refute ExchangeAxioms.middle_basis?(@ground_set_3, @bad_basis_3)
     end
 
-    test "returns true for the trivial basis" do
-      assert ExchangeAxioms.reduction?(@trivial)
+    test "weak_basis_exchange?/1" do
+      assert ExchangeAxioms.weak_basis_exchange?(@good_basis_3)
+      assert ExchangeAxioms.weak_basis_exchange?(@trivial_3)
+      refute ExchangeAxioms.weak_basis_exchange?(@power_set_3)
+      assert ExchangeAxioms.weak_basis_exchange?(@singleton_3)
+      refute ExchangeAxioms.weak_basis_exchange?(@bad_basis_3)
     end
 
-    test "returns true for the power set" do
-      assert ExchangeAxioms.reduction?(@power_set)
+    test "augmentation?/1" do
+      assert ExchangeAxioms.augmentation?(@independent_set_3)
+      assert ExchangeAxioms.augmentation?(@trivial_3)
+      assert ExchangeAxioms.augmentation?(@power_set_3)
+      assert ExchangeAxioms.augmentation?(@singleton_3)
+      refute ExchangeAxioms.augmentation?(@bad_basis_3)
     end
 
-    test "returns true for a singleton set" do
-      assert ExchangeAxioms.reduction?(@singleton)
+    test "reduction?/1" do
+      assert ExchangeAxioms.reduction?(@spanning_set_3)
+      assert ExchangeAxioms.reduction?(@trivial_3)
+      assert ExchangeAxioms.reduction?(@power_set_3)
+      assert ExchangeAxioms.reduction?(@singleton_3)
+      refute ExchangeAxioms.reduction?(@bad_basis_3)
     end
 
-    test "returns false for a bad basis" do
-      refute ExchangeAxioms.reduction?(@bad_basis)
+    test "contraction?/2" do
+      assert ExchangeAxioms.contraction?(@ground_set_3, @dependent_set_3)
+      assert ExchangeAxioms.contraction?(@ground_set_3, @trivial_3)
+      assert ExchangeAxioms.contraction?(@ground_set_3, @power_set_3)
+    end
+
+    test "extension?/2" do
+      assert ExchangeAxioms.extension?(@ground_set_3, @nonspanning_set_3)
+      assert ExchangeAxioms.extension?(@ground_set_3, @trivial_3)
+      assert ExchangeAxioms.extension?(@ground_set_3, @power_set_3)
+    end
+
+    test "elimination?/2" do
+      assert ExchangeAxioms.elimination?(@ground_set_3, @circuit_3)
+      assert ExchangeAxioms.elimination?(@ground_set_3, @trivial_3)
+      refute ExchangeAxioms.elimination?(@ground_set_3, @power_set_3)
+    end
+
+    test "covering?/2" do
+      assert ExchangeAxioms.covering?(@ground_set_3, @hyperplane_3)
+      assert ExchangeAxioms.covering?(@ground_set_3, @trivial_3)
+      assert ExchangeAxioms.covering?(@ground_set_3, @power_set_3)
     end
   end
-
-  # describe "contraction?/2" do
-  #   test "returns true for a good basis" do
-  #     assert ExchangeAxioms.contraction?(@ground_set, @good_basis)
-  #   end
-
-  #   test "returns true for the trivial basis" do
-  #     assert ExchangeAxioms.contraction?(@ground_set, @trivial)
-  #   end
-
-  #   test "returns true for the power set" do
-  #     assert ExchangeAxioms.contraction?(@ground_set, @power_set)
-  #   end
-
-  #   test "returns false for a bad basis" do
-  #     refute ExchangeAxioms.contraction?(@ground_set, @bad_basis)
-  #   end
-  # end
-
-  # describe "extension?/2" do
-  #   test "returns true for a good basis" do
-  #     assert ExchangeAxioms.extension?(@ground_set, @good_basis)
-  #   end
-
-  #   test "returns true for the trivial basis" do
-  #     assert ExchangeAxioms.extension?(@ground_set, @trivial)
-  #   end
-
-  #   test "returns true for the power set" do
-  #     assert ExchangeAxioms.extension?(@ground_set, @power_set)
-  #   end
-
-  #   test "returns false for a bad basis" do
-  #     refute ExchangeAxioms.extension?(@ground_set, @bad_basis)
-  #   end
-  # end
-
-  # describe "elimination?/2" do
-  #   test "returns true for a good basis" do
-  #     assert ExchangeAxioms.elimination?(@ground_set, @good_basis)
-  #   end
-
-  #   test "returns true for the trivial basis" do
-  #     assert ExchangeAxioms.elimination?(@ground_set, @trivial)
-  #   end
-
-  #   test "returns true for the power set" do
-  #     assert ExchangeAxioms.elimination?(@ground_set, @power_set)
-  #   end
-
-  #   test "returns false for a bad basis" do
-  #     refute ExchangeAxioms.elimination?(@ground_set, @bad_basis)
-  #   end
-  # end
-
-  # describe "covering?/2" do
-  #   test "returns true for a good basis" do
-  #     assert ExchangeAxioms.covering?(@ground_set, @good_basis)
-  #   end
-
-  #   test "returns true for the trivial basis" do
-  #     assert ExchangeAxioms.covering?(@ground_set, @trivial)
-  #   end
-
-  #   test "returns true for the power set" do
-  #     assert ExchangeAxioms.covering?(@ground_set, @power_set)
-  #   end
-
-  #   test "returns false for a bad basis" do
-  #     refute ExchangeAxioms.covering?(@ground_set, @bad_basis)
-  #   end
-  # end
 end

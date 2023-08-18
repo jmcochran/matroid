@@ -60,7 +60,7 @@ defmodule Matroid.ExchangeAxioms do
     dependent_pairs = SetOperators.pairs(dependent_sets)
 
     for {a, b} <- dependent_pairs, x <- ground_set,
-        not (MapSet.intersection(a, b) |> MapSet.member?(dependent_sets)) do
+        not (MapSet.member?(dependent_sets, MapSet.intersection(a, b))) do
       MapSet.member?(dependent_sets, MapSet.union(a, b) |> MapSet.delete(x))
     end
     |> Enum.all?()
@@ -71,7 +71,7 @@ defmodule Matroid.ExchangeAxioms do
     nonspanning_pairs = SetOperators.pairs(nonspanning_sets)
 
     for {a, b} <- nonspanning_pairs, x <- ground_set,
-        not (MapSet.union(a, b) |> MapSet.member?(nonspanning_sets)) do
+        not (MapSet.member?(nonspanning_sets, MapSet.union(a, b))) do
       MapSet.member?(nonspanning_sets, MapSet.intersection(a, b) |> MapSet.put(x))
     end
     |> Enum.all?()
