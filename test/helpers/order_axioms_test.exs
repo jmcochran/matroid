@@ -1,5 +1,6 @@
 defmodule Matroid.OrderAxiomsTest do
   use ExUnit.Case, async: true
+  use Matroid.SetFixtures, [:set_system_2]
   alias Matroid.OrderAxioms
 
   @ground_set MapSet.new([1,2,3])
@@ -70,6 +71,11 @@ defmodule Matroid.OrderAxiomsTest do
 
     test "returns false for a MapSet with a complete powerset" do
       refute OrderAxioms.antichain?(@powerset)
+    end
+
+    test "returns true for a size 2 circuit" do
+      assert OrderAxioms.antichain?(@circuits_2a)
+      assert OrderAxioms.antichain?(@circuits_2b)
     end
   end
 

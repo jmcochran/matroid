@@ -54,7 +54,7 @@ defmodule Matroid.SetFixtures do
 
   def set_system_2 do
     quote do
-      @ground_set_2 MapSet.new([1])
+      @ground_set_2 MapSet.new([1,2])
       @power_set_2 MapSet.new([
         MapSet.new([1,2]),
         MapSet.new([1]),
@@ -115,9 +115,7 @@ defmodule Matroid.SetFixtures do
         MapSet.new([2]),
         MapSet.new([])
       ])
-      @circuits_2b MapSet.new([
-        MapSet.new([])
-      ])
+      @circuits_2b MapSet.new([])
       @hyperplanes_2b MapSet.new([
         MapSet.new([1]),
         MapSet.new([2])

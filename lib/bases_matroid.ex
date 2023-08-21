@@ -4,15 +4,43 @@ defmodule Matroid.BasesMatroid do
   defstruct [:ground_set, :bases]
 
   alias Matroid.OrderAxioms
+  alias Matroid.SetOperators
   alias Matroid.ExchangeAxioms
 
   defimpl Matroid do
-    @spec includes?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
-    def includes?(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}, set) do
-      MapSet.member?(bs, set)
-    end
     @spec ground_set(%Matroid.BasesMatroid{}) :: %MapSet{}
     def ground_set(%Matroid.BasesMatroid{ground_set: gs, bases: _bs}), do: gs
+
+    @spec base?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
+    def base?(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}, set) do
+      MapSet.member?(bs, set)
+    end
+
+    @spec independent?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
+    def independent?(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}, set) do
+      bs |> Enum.any?(fn b -> MapSet.subset?(set, b) end)
+    end
+
+    @spec circuit?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
+    def circuit?(%Matroid.BasesMatroid{ground_set: _gs, bases: _bs} = bm, set) do
+     bm |> circuit_sets |> MapSet.member?(set)
+    end
+
+    def base_sets(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}) do
+      bs
+    end
+
+    def independent_sets(%Matroid.BasesMatroid{ground_set: gs, bases: bs}) do
+      SetOperators.lowercone(gs, bs)
+    end
+
+    def dependent_sets(%Matroid.BasesMatroid{ground_set: gs, bases: _bs} = bm) do
+      bm |> independent_sets |> (fn is -> SetOperators.opposite(gs, is) end).()
+    end
+
+    def circuit_sets(%Matroid.BasesMatroid{ground_set: _gs, bases: _bs} = bm) do
+      bm |> dependent_sets |> SetOperators.minimal
+    end
   end
 
 
