@@ -104,9 +104,7 @@ defmodule Matroid.SetFixtures do
         MapSet.new([2]),
         MapSet.new([])
       ])
-      @dependent_sets_2b MapSet.new([
-        MapSet.new([])
-      ])
+      @dependent_sets_2b MapSet.new([])
       @spanning_sets_2b MapSet.new([
         MapSet.new([1,2])
       ])

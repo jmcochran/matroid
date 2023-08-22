@@ -11,7 +11,6 @@ defmodule Matroid.CircuitsMatroid do
     @spec ground_set(%Matroid.CircuitsMatroid{}) :: %MapSet{}
     def ground_set(%Matroid.CircuitsMatroid{ground_set: gs, circuits: _cs}), do: gs
 
-    # This is incorrect
     @spec base?(%Matroid.CircuitsMatroid{}, %MapSet{}) :: boolean
     def base?(%Matroid.CircuitsMatroid{ground_set: _gs, circuits: _cs} = cm, set) do
       cm |> base_sets |> MapSet.member?(set)
@@ -28,7 +27,7 @@ defmodule Matroid.CircuitsMatroid do
       MapSet.member?(cs, set)
     end
 
-    def base_sets(%Matroid.CircuitsMatroid{ground_set: gs, circuits: cs} = cm) do
+    def base_sets(%Matroid.CircuitsMatroid{ground_set: _gs, circuits: _cs} = cm) do
       cm |> independent_sets |> SetOperators.maximal
     end
 
@@ -42,6 +41,15 @@ defmodule Matroid.CircuitsMatroid do
 
     def circuit_sets(%Matroid.CircuitsMatroid{ground_set: _gs, circuits: cs}) do
       cs
+    end
+
+    def to_bases(%Matroid.CircuitsMatroid{ground_set: gs, circuits: _cs} = cm) do
+      {:ok, %Matroid.BasesMatroid{ground_set: gs, bases: MapSet.new(cm |> base_sets)}}
+      # BasesMatroid.new(MapSet.to_list(gs), MapSet.to_list(cm |> base_sets))
+    end
+
+    def to_circuits(%Matroid.CircuitsMatroid{ground_set: gs, circuits: cs}) do
+      {:ok, %Matroid.CircuitsMatroid{ground_set: gs, circuits: cs}}
     end
   end
 

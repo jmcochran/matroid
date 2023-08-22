@@ -41,6 +41,14 @@ defmodule Matroid.BasesMatroid do
     def circuit_sets(%Matroid.BasesMatroid{ground_set: _gs, bases: _bs} = bm) do
       bm |> dependent_sets |> SetOperators.minimal
     end
+
+    def to_bases(%Matroid.BasesMatroid{ground_set: gs, bases: bs}) do
+      {:ok, %Matroid.BasesMatroid{ground_set: gs, bases: bs}}
+    end
+
+    def to_circuits(%Matroid.BasesMatroid{ground_set: gs, bases: _bs} = bm) do
+      {:ok, %Matroid.CircuitsMatroid{ground_set: gs, circuits: MapSet.new(bm |> circuit_sets)}}
+    end
   end
 
 
