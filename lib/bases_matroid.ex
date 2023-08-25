@@ -9,24 +9,44 @@ defmodule Matroid.BasesMatroid do
 
   defimpl Matroid do
     @spec ground_set(%Matroid.BasesMatroid{}) :: %MapSet{}
-    def ground_set(%Matroid.BasesMatroid{ground_set: gs, bases: _bs}), do: gs
+    def ground_set(%Matroid.BasesMatroid{ground_set: gs}), do: gs
 
     @spec base?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
-    def base?(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}, set) do
+    def base?(%Matroid.BasesMatroid{bases: bs}, set) do
       MapSet.member?(bs, set)
     end
 
     @spec independent?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
-    def independent?(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}, set) do
+    def independent?(%Matroid.BasesMatroid{bases: bs}, set) do
       bs |> Enum.any?(fn b -> MapSet.subset?(set, b) end)
     end
 
+    @spec dependent?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
+    def dependent?(%Matroid.BasesMatroid{} = bm, set) do
+      not independent?(bm, set)
+    end
+
+    @spec spanning?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
+    def spanning?(%Matroid.BasesMatroid{} = bm, set) do
+      bm |> spanning_sets |> MapSet.member?(set)
+    end
+
+    @spec nonspanning?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
+    def nonspanning?(%Matroid.BasesMatroid{} = bm, set) do
+      not spanning?(bm, set)
+    end
+
     @spec circuit?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
-    def circuit?(%Matroid.BasesMatroid{ground_set: _gs, bases: _bs} = bm, set) do
+    def circuit?(%Matroid.BasesMatroid{} = bm, set) do
      bm |> circuit_sets |> MapSet.member?(set)
     end
 
-    def base_sets(%Matroid.BasesMatroid{ground_set: _gs, bases: bs}) do
+    @spec hyperplane?(%Matroid.BasesMatroid{}, %MapSet{}) :: boolean
+    def hyperplane?(%Matroid.BasesMatroid{} = bm, set) do
+     bm |> hyperplane_sets |> MapSet.member?(set)
+    end
+
+    def base_sets(%Matroid.BasesMatroid{bases: bs}) do
       bs
     end
 
@@ -34,19 +54,31 @@ defmodule Matroid.BasesMatroid do
       SetOperators.lowercone(gs, bs)
     end
 
-    def dependent_sets(%Matroid.BasesMatroid{ground_set: gs, bases: _bs} = bm) do
+    def dependent_sets(%Matroid.BasesMatroid{ground_set: gs} = bm) do
       bm |> independent_sets |> (fn is -> SetOperators.opposite(gs, is) end).()
     end
 
-    def circuit_sets(%Matroid.BasesMatroid{ground_set: _gs, bases: _bs} = bm) do
+    def spanning_sets(%Matroid.BasesMatroid{ground_set: gs, bases: bs}) do
+      SetOperators.uppercone(gs, bs)
+    end
+
+    def nonspanning_sets(%Matroid.BasesMatroid{ground_set: gs} = bm) do
+      bm |> spanning_sets |> (fn ss -> SetOperators.opposite(gs, ss) end).()
+    end
+
+    def circuit_sets(%Matroid.BasesMatroid{} = bm) do
       bm |> dependent_sets |> SetOperators.minimal
+    end
+
+    def hyperplane_sets(%Matroid.BasesMatroid{} = bm) do
+      bm |> nonspanning_sets |> SetOperators.maximal
     end
 
     def to_bases(%Matroid.BasesMatroid{ground_set: gs, bases: bs}) do
       {:ok, %Matroid.BasesMatroid{ground_set: gs, bases: bs}}
     end
 
-    def to_circuits(%Matroid.BasesMatroid{ground_set: gs, bases: _bs} = bm) do
+    def to_circuits(%Matroid.BasesMatroid{ground_set: gs} = bm) do
       {:ok, %Matroid.CircuitsMatroid{ground_set: gs, circuits: MapSet.new(bm |> circuit_sets)}}
     end
   end

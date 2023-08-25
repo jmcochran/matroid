@@ -65,6 +65,60 @@ defmodule CircuitsMatroidTest do
     end
   end
 
+  describe "circuits matroids dependent?/2" do
+    test "1 member set system", context do
+      {:ok, matroid_1a} = context[:matroid_1a]
+      refute Matroid.dependent?(matroid_1a, MapSet.new([1]))
+      refute Matroid.dependent?(matroid_1a, MapSet.new([]))
+    end
+    test "2 member set systems", context do
+      {:ok, matroid_2a} = context[:matroid_2a]
+      {:ok, matroid_2b} = context[:matroid_2b]
+      refute Matroid.dependent?(matroid_2a, MapSet.new([1]))
+      assert Matroid.dependent?(matroid_2a, MapSet.new([1,2]))
+      refute Matroid.dependent?(matroid_2a, MapSet.new([]))
+      refute Matroid.dependent?(matroid_2b, MapSet.new([1,2]))
+      refute Matroid.dependent?(matroid_2b, MapSet.new([1]))
+      refute Matroid.dependent?(matroid_2b, MapSet.new([2]))
+    end
+  end
+
+  describe "circuits matroids spanning?/2" do
+    test "1 member set system", context do
+      {:ok, matroid_1a} = context[:matroid_1a]
+      assert Matroid.spanning?(matroid_1a, MapSet.new([1]))
+      refute Matroid.spanning?(matroid_1a, MapSet.new([]))
+    end
+    test "2 member set systems", context do
+      {:ok, matroid_2a} = context[:matroid_2a]
+      {:ok, matroid_2b} = context[:matroid_2b]
+      assert Matroid.spanning?(matroid_2a, MapSet.new([1]))
+      assert Matroid.spanning?(matroid_2a, MapSet.new([1,2]))
+      refute Matroid.spanning?(matroid_2a, MapSet.new([]))
+      assert Matroid.spanning?(matroid_2b, MapSet.new([1,2]))
+      refute Matroid.spanning?(matroid_2b, MapSet.new([1]))
+      refute Matroid.spanning?(matroid_2b, MapSet.new([2]))
+    end
+  end
+
+  describe "circuits matroids nonspanning?/2" do
+    test "1 member set system", context do
+      {:ok, matroid_1a} = context[:matroid_1a]
+      refute Matroid.nonspanning?(matroid_1a, MapSet.new([1]))
+      assert Matroid.nonspanning?(matroid_1a, MapSet.new([]))
+    end
+    test "2 member set systems", context do
+      {:ok, matroid_2a} = context[:matroid_2a]
+      {:ok, matroid_2b} = context[:matroid_2b]
+      refute Matroid.nonspanning?(matroid_2a, MapSet.new([1]))
+      refute Matroid.nonspanning?(matroid_2a, MapSet.new([1,2]))
+      assert Matroid.nonspanning?(matroid_2a, MapSet.new([]))
+      refute Matroid.nonspanning?(matroid_2b, MapSet.new([1,2]))
+      assert Matroid.nonspanning?(matroid_2b, MapSet.new([1]))
+      assert Matroid.nonspanning?(matroid_2b, MapSet.new([2]))
+    end
+  end
+
   describe "Circuits matroids circuit?/2" do
     test "1 member set system", context do
       {:ok, matroid_1a} = context[:matroid_1a]
@@ -82,6 +136,26 @@ defmodule CircuitsMatroidTest do
       refute Matroid.circuit?(matroid_2b, MapSet.new([1]))
       refute Matroid.circuit?(matroid_2b, MapSet.new([2]))
       refute Matroid.circuit?(matroid_2b, MapSet.new([]))
+    end
+  end
+
+  describe "Circuits matroids hyperplane?/2" do
+    test "1 member set system", context do
+      {:ok, matroid_1a} = context[:matroid_1a]
+      refute Matroid.hyperplane?(matroid_1a, MapSet.new([1]))
+      assert Matroid.hyperplane?(matroid_1a, MapSet.new([]))
+    end
+    test "2 member set systems", context do
+      {:ok, matroid_2a} = context[:matroid_2a]
+      {:ok, matroid_2b} = context[:matroid_2b]
+      refute Matroid.hyperplane?(matroid_2a, MapSet.new([1]))
+      assert Matroid.hyperplane?(matroid_2a, MapSet.new([2]))
+      refute Matroid.hyperplane?(matroid_2a, MapSet.new([1,2]))
+      refute Matroid.hyperplane?(matroid_2a, MapSet.new([]))
+      refute Matroid.hyperplane?(matroid_2b, MapSet.new([1,2]))
+      assert Matroid.hyperplane?(matroid_2b, MapSet.new([1]))
+      assert Matroid.hyperplane?(matroid_2b, MapSet.new([2]))
+      refute Matroid.hyperplane?(matroid_2b, MapSet.new([]))
     end
   end
 
@@ -137,6 +211,32 @@ defmodule CircuitsMatroidTest do
     end
   end
 
+  describe "circuit matroid spanning_sets/1" do
+    test "1 member set system", context do
+      {:ok, matroid_1a} = context[:matroid_1a]
+      assert Matroid.spanning_sets(matroid_1a) == @spanning_sets_1a
+    end
+    test "2 member set systems", context do
+      {:ok, matroid_2a} = context[:matroid_2a]
+      {:ok, matroid_2b} = context[:matroid_2b]
+      assert Matroid.spanning_sets(matroid_2a) == @spanning_sets_2a
+      assert Matroid.spanning_sets(matroid_2b) == @spanning_sets_2b
+    end
+  end
+
+  describe "circuit matroid nonspanning_sets/1" do
+    test "1 member set system", context do
+      {:ok, matroid_1a} = context[:matroid_1a]
+      assert Matroid.nonspanning_sets(matroid_1a) == @nonspanning_sets_1a
+    end
+    test "2 member set systems", context do
+      {:ok, matroid_2a} = context[:matroid_2a]
+      {:ok, matroid_2b} = context[:matroid_2b]
+      assert Matroid.nonspanning_sets(matroid_2a) == @nonspanning_sets_2a
+      assert Matroid.nonspanning_sets(matroid_2b) == @nonspanning_sets_2b
+    end
+  end
+
   describe "circuit matroid circuit_sets/1" do
     test "1 member set system", context do
       {:ok, matroid_1a} = context[:matroid_1a]
@@ -147,6 +247,19 @@ defmodule CircuitsMatroidTest do
       {:ok, matroid_2b} = context[:matroid_2b]
       assert Matroid.circuit_sets(matroid_2a) == @circuits_2a
       assert Matroid.circuit_sets(matroid_2b) == @circuits_2b
+    end
+  end
+
+  describe "circuit matroid hyperplane_sets/1" do
+    test "1 member set system", context do
+      {:ok, matroid_1a} = context[:matroid_1a]
+      assert Matroid.hyperplane_sets(matroid_1a) == @hyperplanes_1a
+    end
+    test "2 member set systems", context do
+      {:ok, matroid_2a} = context[:matroid_2a]
+      {:ok, matroid_2b} = context[:matroid_2b]
+      assert Matroid.hyperplane_sets(matroid_2a) == @hyperplanes_2a
+      assert Matroid.hyperplane_sets(matroid_2b) == @hyperplanes_2b
     end
   end
 
