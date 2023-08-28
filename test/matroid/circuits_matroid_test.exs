@@ -28,7 +28,6 @@ defmodule CircuitsMatroidTest do
     end
   end
 
-
   describe "circuits matroids base?/2" do
     test "1 member set system", context do
       {:ok, matroid_1a} = context[:matroid_1a]
