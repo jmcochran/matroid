@@ -84,9 +84,9 @@ defmodule Matroid.BasesMatroid do
   end
 
 
-  @spec new(nonempty_list(any), nonempty_list(list(any))) ::
+  @spec new(list(any), nonempty_list(list(any))) ::
           {:error, reason: String.t()} | {:ok, %Matroid.BasesMatroid{bases: MapSet.t(), ground_set: MapSet.t()}}
-  def new(gs, bs) when length(gs) > 0 and length(bs) > 0 do
+  def new(gs, bs) when is_list(gs) and is_list(bs) and length(bs) > 0 do
     with gs_set <- MapSet.new(gs),
          bs_set <- MapSet.new(bs |> Enum.map(fn b -> MapSet.new(b) end)),
          true <- OrderAxioms.antichain?(bs_set),

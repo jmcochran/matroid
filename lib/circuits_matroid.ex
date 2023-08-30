@@ -84,9 +84,9 @@ defmodule Matroid.CircuitsMatroid do
     end
   end
 
-  @spec new(nonempty_list(any), nonempty_list(list(any))) ::
+  @spec new(list(any), list(list(any))) ::
           {:error, reason: String.t()} | {:ok, %Matroid.CircuitsMatroid{circuits: MapSet.t(), ground_set: MapSet.t()}}
-  def new(gs, cs) when length(gs) > 0 do
+  def new(gs, cs) when is_list(gs) and is_list(cs) do
     with gs_set <- MapSet.new(gs),
           cs_set <- MapSet.new(cs |> Enum.map(fn c -> MapSet.new(c) end)),
           false <- MapSet.member?(cs_set, MapSet.new([])),
